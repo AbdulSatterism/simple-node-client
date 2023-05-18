@@ -1,52 +1,55 @@
+import { useState } from 'react';
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 function App() {
+
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:5000/users')
       .then(res => res.json())
-      .then(data => setUsers(data))
+      .then(data => {
+        setUsers(data)
+      })
   }, []);
 
-  const handleSubmit = (event) => {
+  const handleAddUser = event => {
     event.preventDefault();
-    const form = event.target;
-    const name = form.name.value;
-    const email = form.email.value;
-    const user = { name, email }
+    const name = event.target.name.value;
+    const email = event.target.email.value;
+    const user = { name, email };
     console.log(user);
+
     fetch('http://localhost:5000/users', {
-      method: "POST",
+      method: 'POST',
       headers: {
-        'content-type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(user)
     })
       .then(res => res.json())
       .then(data => {
-        console.log(data);
+        console.log(data)
         const newUsers = [...users, data];
         setUsers(newUsers)
       })
-      .catch(error => console.log(error))
-    form.reset()
-
+      .catch(err => console.log(err))
+    event.target.reset();
   }
 
   return (
     <div className="App">
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleAddUser}>
         <input type="text" name="name" id="" placeholder='name' />
         <br />
         <input type="email" name="email" id="" placeholder='email' />
         <br />
-        <button type="submit">Add user</button>
+        <button type="submit">add user</button>
       </form>
 
-      <h1>User :{users.length}</h1>
+      <h2>Users :{users.length}</h2>
       <div>
         {
           users.map(user => <p key={user._id}>{user.name} {user.email}</p>)
